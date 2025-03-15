@@ -23,12 +23,9 @@ const server = createServer(app) //creamos "server" que representa un servidor h
 app.use(express.static(__dirname + "/publico"));
 
 //RUTAS
-//app.get("/ingresar_empleado",(req,res)=> res.sendFile("/Client/paginas/ingresar.html"))
-//app.get("/mostrar_empleados",(req,res)=> res.sendFile("/Client/paginas/empleados.html"))
 app.get('/', (req, res) => {
     // Servir el archivo index.html desde la carpeta client en la raíz del proyecto
-    res.sendFile(path.join(process.cwd(), 'Client', 'paginas', 'empleados.html'));
-    res.sendFile(path.join(process.cwd(), 'Client', 'paginas', 'ingresar.html'));
+    res.sendFile(path.join(process.cwd(), 'Client', 'index.html'));
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -63,10 +60,13 @@ connection.on('connect', (err)=>{
 }); 
 //FIN DE LA CONEXION A LA BASE DE DATOS
 
-
+//MANEJO DE SOLICITUDES
 app.get('/', (req, res) => {
-    // Servir el archivo index.html desde la carpeta client en la raíz del proyecto
-    res.sendFile(path.join(process.cwd(), 'Client', 'index.html'));
+    res.sendFile(path.join(process.cwd(), 'Client', 'index.html')); //Envia un archivo html al cliente como respuesta a la solicitud
+});
+
+app.get('/ingresar', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'Client', 'ingresar.html'));
 });
   
 app.listen(port, () => { //escucha el puerto especificado para inicializar el servidor

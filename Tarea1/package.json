@@ -4,7 +4,8 @@
   "main": "server/index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon --exec node server/index.js"
+    "dev": "nodemon --exec node server/index.js",
+    "dev2": "node --watch ./server/index.js"
   },
   "keywords": [],
   "author": "",

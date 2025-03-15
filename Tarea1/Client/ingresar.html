@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingresar Empleados</title>
+    <style> /*codigo css*/
+        body{
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 90svh;
+            font-size: large;
+        }
+
+        .form-container{
+            width: 500px;
+        }
+
+        form{
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+    </style>
+
+    <script type="module"> //codigo javascript
+
+        //Si se presiona el boton insertar empleados:
+        document.addEventListener('DOMContentLoaded', () => {
+            const RegresarBtn = document.getElementById('Regresar-btn');
+            RegresarBtn.addEventListener('click', () => {
+                window.location.href = '/'; //crea una solicitud GET a la ruta \ para que Express la maneje
+            });
+        });
+    </script>
+
+</head>
+<body>
+    <main>
+        <div class="form-container">
+        <h1>Ingresar Empleados</h1>
+        <p>Ingrese los datos del trabajador:</p>
+        <form id="formulario ingresar">
+            <label for="nombre">Nombre:</label>
+            <input type="text" name="nombre" id="nombre" placeholder="Nombre del empleado">
+            <label for="salario">Salario:</label>
+            <input type="text" name="salario" id="salario" placeholder="Salario del empleado">
+            <button type="submit">Insertar</button>
+        </form>
+        </div>
+
+        <button id="Regresar-btn">Regresar</button>
+    </main>
+</body>
+</html>

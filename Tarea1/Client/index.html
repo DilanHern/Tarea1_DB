@@ -1,11 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Mostrar Empleados</title>
+    <style>
+        /*codigo css*/
+    </style> 
+    <script type="module"> //codigo javascript
+
+        //Si se presiona el boton insertar empleados:
+        document.addEventListener('DOMContentLoaded', () => {
+            const insertarEmpleadosBtn = document.getElementById('insertar-empleados-btn');
+            insertarEmpleadosBtn.addEventListener('click', () => {
+                window.location.href = '/ingresar'; //crea una solicitud GET a la ruta \ingresar para que Express la maneje
+            });
+    });
+
+    </script>
 </head>
 <body>
-    
+    <main>
+        <div class="form-container">
+        <h1>Empleados de la Empresa</h1> 
+        <button id="insertar-empleados-btn">Insertar Empleados</button>
+        </div>
+    </main>
 </body>
 </html>
