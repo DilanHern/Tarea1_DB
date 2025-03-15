@@ -1,17 +1,24 @@
 {
   "name": "tarea1",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server/index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --watch ./server/app.js"
+    "dev": "nodemon --exec node server/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "tedious": "^18.6.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }

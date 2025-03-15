@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingresar Empleados</title>
+    <link rel="stylesheet" href="estilo.css">
+    <script src="ingresar_empleado.js" defer></script>
+</head>
+<body>
+    <main>
+        <div class="form-container">
+        <h1>Ingresar Empleados</h1>
+        <p>Ingrese los datos del trabajador:</p>
+        <form id="formulario ingresar">
+            <label for="nombre">Nombre:</label>
+            <input type="text" name="nombre" id="nombre" placeholder="Nombre del empleado">
+            <label for="salario">Salario:</label>
+            <input type="text" name="salario" id="salario" placeholder="Salario del empleado">
+            <button type="submit">Insertar</button>
+            <button type="button" onclick="window.location.href='/mostrar_empleados'">Regresar</button>
+
+        </form>
+        </div>
+    </main>
+</body>
+</html>
