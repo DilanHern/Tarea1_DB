@@ -16,7 +16,7 @@ app.set("port", port);
 //app.listen(app.get("port")); ESTA INSTRUCCION ERA LA QUE ME DABA PROBLEMASAS
 console.log("Servidor corriendo en el puerto", app.get("port"));
 
-const server = createServer(app) //creamos "server" que representa un servidor http creado a partir de la app Express, maneja las conexiones y solicitudes de red (http y websocket).
+const server = createServer(app) //creamos "server" que representa un servidor http creado a partir de la app Express, maneja las conexiones y solicitudes de red (http).
 //Debemos pasarle "app" para integrar la logica de rutas y middleware con el servidor http
 
 //CONFIGURACION
@@ -27,6 +27,8 @@ app.get('/', (req, res) => {
     // Servir el archivo index.html desde la carpeta client en la raíz del proyecto
     res.sendFile(path.join(process.cwd(), 'Client', 'index.html'));
 });
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //CONEXION A LA BASE DE DATOS
@@ -59,6 +61,8 @@ connection.on('connect', (err)=>{
     else console.log("Se ha conectado a la base de datos");
 }); 
 //FIN DE LA CONEXION A LA BASE DE DATOS
+/////////////////////////////////////////////////////////////////////////////////////////
+
 
 //MANEJO DE SOLICITUDES
 app.get('/', (req, res) => {
@@ -72,5 +76,70 @@ app.get('/ingresar', (req, res) => {
 app.listen(port, () => { //escucha el puerto especificado para inicializar el servidor
     console.log(`Server running on port ${port}`)
 })
-/////////////////////////////////////////////////////////////////////////////////////////
 
+//Funciones
+// Función para ejecutar el stored procedure dbo.InsertarEmpleado
+function ejecutarDboInsertarEmpleado(nombreInsertar, salarioInsertar) {
+    // Crear el request para ejecutar el stored procedure
+    const request = new Request('dbo.InsertarEmpleado', (err) => {
+        if (err) {
+            console.log('Error al ejecutar el stored procedure:', err);
+        }
+    });
+
+    // Agregar parámetros al request
+    request.addParameter('Nombre', TYPES.VarChar, nombreInsertar);
+    request.addParameter('Salario', TYPES.Money, salarioInsertar);
+
+    // Ejecutar el stored procedure
+    connection.callProcedure(request);
+
+    // Manejar el resultado del stored procedure
+    request.on('requestCompleted', () => {
+        console.log('Stored procedure ejecutado exitosamente');
+    });
+
+    request.on('error', (err) => {
+        console.log('Error en el request:', err);
+    });
+}
+
+// Función para ejecutar el stored procedure dbo.ListarEmpleados
+function ejecutarDboListarEmpleado() {
+    // Crear el request para ejecutar el stored procedure
+    const request = new Request('dbo.ListarEmpleados', (err) => {
+        if (err) {
+            console.log('Error al ejecutar el stored procedure:', err);
+        }
+    });
+
+    // Ejecutar el stored procedure
+    connection.callProcedure(request);
+
+    // Manejar el resultado del stored procedure
+    request.on('row', (columns) => {
+        let id, Nombre, Salario;
+        columns.forEach((column) => {
+            switch (column.metadata.colName) {
+                case 'id':
+                    id = column.value;
+                    break;
+                case 'Nombre':
+                    Nombre = column.value;
+                    break;
+                case 'Salario':
+                    Salario = column.value;
+                    break;
+            }
+        });
+        console.log(`Id: ${id}, Nombre: ${Nombre}, Salario: ${Salario}`);
+    });
+
+    request.on('requestCompleted', () => {
+        console.log('Stored procedure ejecutado exitosamente');
+    });
+
+    request.on('error', (err) => {
+        console.log('Error en el request:', err);
+    });
+}
