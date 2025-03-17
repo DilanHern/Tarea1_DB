@@ -18,17 +18,23 @@
         .form-container{
             width: 500px;
         }
-
+        
         form{
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
+        .error{
+            color: red;
+        }
+
+        .escondido{
+            display: none;
+        }
 
     </style>
 
     <script type="module"> //codigo javascript
-
         //Si se presiona el boton insertar empleados:
         document.addEventListener('DOMContentLoaded', () => {
             const RegresarBtn = document.getElementById('Regresar-btn');
@@ -37,14 +43,13 @@
             });
         });
     </script>
-
 </head>
 <body>
-    <main>
+    <main> 
         <div class="form-container">
         <h1>Ingresar Empleados</h1>
         <p>Ingrese los datos del trabajador:</p>
-        <form id="formulario ingresar">
+        <form id="formulario-ingresar"> 
             <label for="nombre">Nombre:</label>
             <input type="text" name="nombre" id="nombre" placeholder="Nombre del empleado">
             <label for="salario">Salario:</label>
@@ -52,8 +57,8 @@
             <button type="submit">Insertar</button>
         </form>
         </div>
-
         <button id="Regresar-btn">Regresar</button>
+        <p class="error escondido">Error al insertar empleado.</p>
     </main>
 </body>
 </html>
