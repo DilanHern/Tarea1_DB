@@ -103,8 +103,7 @@ function ejecutarDboInsertarEmpleado(nombreInsertar, salarioInsertar) {
         console.log('Error en el request:', err);
     });
 }
-
-// Función para ejecutar el stored procedure dbo.ListarEmpleados
+/*
 function ejecutarDboListarEmpleado() {
     // Crear el request para ejecutar el stored procedure
     const request = new Request('dbo.ListarEmpleados', (err) => {
@@ -143,4 +142,59 @@ function ejecutarDboListarEmpleado() {
         console.log('Error en el request:', err);
     });
 }
+*/
+app.get('/empleados', (req, res) => {
+    const request = new Request('dbo.ListarEmpleados', (err) => {
+        if (err) {
+            console.error('Error al ejecutar el stored procedure:', err);
+            res.status(500).json({ error: 'Error en el servidor' });
+            return;
+        }
+    });
 
+    const empleados = [];
+
+    request.on('row', (columns) => {
+        const empleado = {};
+        columns.forEach((column) => {
+            switch (column.metadata.colName) {
+                case 'id':
+                    empleado.id = column.value;
+                    break;
+                case 'Nombre': 
+                    empleado.nombre = column.value;
+                    break;
+                case 'Salario': 
+                    empleado.salario = column.value;
+                    break;
+            }
+        });
+        empleados.push(empleado);
+    });
+
+    request.on('requestCompleted', () => {
+        res.json(empleados); // manda resultados como json
+    });
+
+    request.on('error', (err) => {
+        console.error('Error en el request:', err);
+        res.status(500).json({ error: 'Error en el servidor' });
+    });
+
+    connection.callProcedure(request);
+});
+
+
+app.post('/empleados', (req, res) => {
+    const { nombre, salario } = req.body;
+    const sql = 'CALL dbo.InsertarEmpleado(?, ?)'; // Llama al stored procedure
+
+    db.query(sql, [nombre, salario], (err) => {
+        if (err) {
+            console.error('Error al ejecutar el procedimiento almacenado:', err);
+            res.status(500).json({ error: 'Error en el servidor' });
+            return;
+        }
+        res.status(201).json({ message: 'Empleado insertado' });
+    });
+});

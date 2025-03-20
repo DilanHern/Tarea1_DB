@@ -5,45 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mostrar Empleados</title>
     <style>
-        table, th, td{
+        table, th, td {
             border: 1px solid black;
             border-collapse: collapse;
         }
 
-        th, td{
+        th, td {
             padding: 5px;
         }
     </style> 
-    <script type="module"> //codigo javascript
-
-        //Si se presiona el boton insertar empleados:
+    <script type="module">
+        // Si se presiona el botón "Insertar Empleados"
         document.addEventListener('DOMContentLoaded', () => {
             const insertarEmpleadosBtn = document.getElementById('insertar-empleados-btn');
             insertarEmpleadosBtn.addEventListener('click', () => {
-                window.location.href = '/ingresar'; //crea una solicitud GET a la ruta \ingresar para que Express la maneje
+                window.location.href = '/ingresar'; // Redirige a la ruta "/ingresar" en Express
             });
-    });
-
+        });
     </script>
 </head>
 <body>
     <main>
         <div class="form-container">
-        <h1>Empleados de la Empresa</h1> 
-        <table style="width: 100%;">
-            <tr>
-                <th>id</th>
-                <th>Nombre</th>
-                <th>Salario</th>
-            </tr>
-            <tr>
-                <td>ESPACIO DE ID</td>
-                <td>ESPACIO DE NOMBRE</td>
-                <td>ESPACIO DE SALARIO</td>
-            </tr>
-        </table>
-        <button id="insertar-empleados-btn">Insertar Empleados</button>
+            <h1>Empleados de la Empresa</h1> 
+            <table id="tabla-empleados" style="width: 100%;">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Salario</th>
+                </tr>
+                <!-- Aquí se insertarán los empleados dinámicamente -->
+            </table>
+            <button id="insertar-empleados-btn">Insertar Empleados</button>
         </div>
     </main>
+
+    <!-- Agregar el script al final del body para cargar empleados -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabla = document.getElementById('tabla-empleados');
+
+            // Función para obtener empleados de la API
+            async function cargarEmpleados() {
+                try {
+                    const response = await fetch('http://localhost:3000/empleados');
+                    const empleados = await response.json();
+
+                    // Limpiar filas previas (excepto el encabezado)
+                    tabla.innerHTML = `
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Salario</th>
+                        </tr>
+                    `;
+
+                    // Llenar la tabla con los datos recibidos
+                    empleados.forEach(emp => {
+                        const fila = document.createElement('tr');
+                        fila.innerHTML = `
+                            <td>${emp.id}</td>
+                            <td>${emp.nombre}</td>
+                            <td>${emp.salario}</td>
+                        `;
+                        tabla.appendChild(fila);
+                    });
+                } catch (error) {
+                    console.error('Error cargando empleados:', error);
+                }
+            }
+
+            cargarEmpleados(); // Llamar la función cuando cargue la página
+        });
+    </script>
 </body>
 </html>
