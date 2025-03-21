@@ -1,5 +1,5 @@
 import express from 'express'
-import { Connection, Request } from 'tedious';
+import { Connection, Request, TYPES } from 'tedious';
 import path from "path";
 //import path, { dirname } from 'path';
 import { createServer } from 'http';
@@ -78,7 +78,7 @@ app.listen(port, () => { //escucha el puerto especificado para inicializar el se
 })
 
 //Funciones
-// Función para ejecutar el stored procedure dbo.InsertarEmpleado
+/* Función para ejecutar el stored procedure dbo.InsertarEmpleado
 function ejecutarDboInsertarEmpleado(nombreInsertar, salarioInsertar) {
     // Crear el request para ejecutar el stored procedure
     const request = new Request('dbo.InsertarEmpleado', (err) => {
@@ -103,7 +103,7 @@ function ejecutarDboInsertarEmpleado(nombreInsertar, salarioInsertar) {
         console.log('Error en el request:', err);
     });
 }
-/*
+
 function ejecutarDboListarEmpleado() {
     // Crear el request para ejecutar el stored procedure
     const request = new Request('dbo.ListarEmpleados', (err) => {
@@ -143,6 +143,44 @@ function ejecutarDboListarEmpleado() {
     });
 }
 */
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Para manejar datos enviados desde formularios
+
+//Rutas
+app.post('/empleados', (req, res) => {
+    const { nombre, salario } = req.body;
+
+    const request = new Request('dbo.InsertarEmpleado', (err) => {
+        if (err) {
+            console.error('Error al ejecutar el stored procedure:', err);
+            return res.status(500).json({ error: 'Error en el servidor' });
+        }
+    });
+
+    request.addParameter('nombreInsertar', TYPES.VarChar, nombre);
+    request.addParameter('salarioInsertar', TYPES.Money, salario);
+    request.addOutputParameter('OutResultCode', TYPES.Int);
+
+    request.on('requestCompleted', () => {
+        const resultCode = request.parameters.OutResultCode?.value;
+
+        if (resultCode === 0) { //ERRORRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+            res.status(201).json({ message: 'Empleado insertado exitosamente' });
+        } else {
+            res.status(400).json({ error: 'Error al insertar empleado', code: resultCode });
+        }
+    });
+
+    request.on('error', (err) => {
+        console.error('Error en el request:', err);
+        res.status(500).json({ error: 'Error en el servidor' });
+    });
+
+    connection.callProcedure(request);
+});
+
+
 app.get('/empleados', (req, res) => {
     const request = new Request('dbo.ListarEmpleados', (err) => {
         if (err) {
@@ -184,17 +222,3 @@ app.get('/empleados', (req, res) => {
     connection.callProcedure(request);
 });
 
-
-app.post('/empleados', (req, res) => {
-    const { nombre, salario } = req.body;
-    const sql = 'CALL dbo.InsertarEmpleado(?, ?)'; // Llama al stored procedure
-
-    db.query(sql, [nombre, salario], (err) => {
-        if (err) {
-            console.error('Error al ejecutar el procedimiento almacenado:', err);
-            res.status(500).json({ error: 'Error en el servidor' });
-            return;
-        }
-        res.status(201).json({ message: 'Empleado insertado' });
-    });
-});

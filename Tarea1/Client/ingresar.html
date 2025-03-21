@@ -42,6 +42,48 @@
                 window.location.href = '/'; //crea una solicitud GET a la ruta \ para que Express la maneje
             });
         });
+        document.addEventListener('DOMContentLoaded', () => {
+    const formulario = document.getElementById('formulario-ingresar');
+    const errorMensaje = document.querySelector('.error');
+
+    formulario.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Evita que el formulario recargue la página
+
+        // Oculta el mensaje de error al intentar enviar
+        errorMensaje.classList.add('escondido');
+
+        // Obtener los datos del formulario
+        const nombre = document.getElementById('nombre').value;
+        const salario = document.getElementById('salario').value;
+
+        try {
+            // Enviar los datos al servidor
+            const response = await fetch('http://localhost:3000/empleados', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ nombre, salario }),
+            });
+
+            if (response.ok) {
+                // Si la respuesta es exitosa, oculta el mensaje de error y muestra un mensaje de éxito
+                errorMensaje.classList.add('escondido'); // Asegúrate de que el mensaje de error esté oculto
+                alert('Empleado insertado exitosamente');
+                formulario.reset(); // Limpia el formulario
+            } else {
+                // Si la respuesta no es exitosa, lanza un error
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al insertar empleado');
+            }
+        } catch (error) {
+            console.error(error);
+            // Muestra el mensaje de error solo si ocurre un problema real
+            errorMensaje.textContent = error.message;
+            errorMensaje.classList.remove('escondido');
+        }
+    });
+});
     </script>
 </head>
 <body>
