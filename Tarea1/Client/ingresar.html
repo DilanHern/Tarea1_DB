@@ -29,11 +29,85 @@
 
     <script type="module"> //codigo javascript
 
-        //Si se presiona el boton insertar empleados:
+        //Si se presiona el boton regresar:
         document.addEventListener('DOMContentLoaded', () => {
             const RegresarBtn = document.getElementById('Regresar-btn');
             RegresarBtn.addEventListener('click', () => {
                 window.location.href = '/'; //crea una solicitud GET a la ruta \ para que Express la maneje
+            });
+        });
+
+        //Si se presiona el boton insertar empleado:
+        document.addEventListener('DOMContentLoaded', () => {
+            const insertarBtn = document.getElementById('insertar-empleado-btn');
+            insertarBtn.addEventListener('click', () => {
+                event.preventDefault(); // Evita el envío inmediato del formulario
+                const errorMensajeDiv = document.getElementById('error-mensaje');
+                const successMensajeDiv = document.getElementById('success-mensaje');
+
+                //validaciones:
+                const nombre = document.getElementById('nombre').value;
+                const salario = document.getElementById('salario').value;
+                if (nombre === ""){
+                    // Muestra mensaje de error
+                    errorMensajeDiv.textContent = "Error: El campo 'Nombre' es obligatorio."; //texto del div
+                    errorMensajeDiv.style.display = "block"; //el div se vuelve visible
+                    // Oculta el mensaje después de 3 segundos
+                    setTimeout(() => {
+                        errorMensajeDiv.style.display = "none";
+                    }, 3000);
+                }
+
+                else if (!/^[a-zA-Z\s-]+$/.test(nombre)){ //verificacion de si solo contiene letras y guion por medio de expresiones regulares
+                    // Muestra mensaje de error
+                    errorMensajeDiv.textContent = "Error: El campo 'nombre' solo puede contener caracteres alfabeticos y guiones."; 
+                    errorMensajeDiv.style.display = "block";
+                    setTimeout(() => {
+                        errorMensajeDiv.style.display = "none";
+                    }, 3000);
+                }
+
+                else if (salario === ""){
+                    // Muestra mensaje de error
+                    errorMensajeDiv.textContent = "Error: El campo 'Salario' es obligatorio."; 
+                    errorMensajeDiv.style.display = "block";
+                    setTimeout(() => {
+                        errorMensajeDiv.style.display = "none";
+                    }, 3000);
+                }
+
+                else if ( !(/^[0-9]+(\.[0-9]{2})?$/.test(salario)) ){ //verifica si solo contiene digitos y decimales de 2 digitos
+                    // Muestra mensaje de error
+                    errorMensajeDiv.textContent = "Error: El campo 'Salario' solo permite digitos y digitos decimales de 2 decimales."; 
+                    errorMensajeDiv.style.display = "block";
+                    setTimeout(() => {
+                        errorMensajeDiv.style.display = "none";
+                    }, 3000);
+                }
+
+                else { //no hay errores
+                    // envía una solicitud POST a Express con los datos:
+                    fetch('/insertarEmpleado', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ nombre, salario })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        successMensajeDiv.textContent = data.message;
+                        successMensajeDiv.style.display = "block";
+                        setTimeout(() => { successMensajeDiv.style.display = "none"; }, 3000);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        errorMensajeDiv.textContent = "Error en la inserción.";
+                        errorMensajeDiv.style.display = "block";
+                        setTimeout(() => { errorMensajeDiv.style.display = "none"; }, 3000);
+                    });
+                }
             });
         });
     </script>
@@ -49,11 +123,13 @@
             <input type="text" name="nombre" id="nombre" placeholder="Nombre del empleado">
             <label for="salario">Salario:</label>
             <input type="text" name="salario" id="salario" placeholder="Salario del empleado">
-            <button type="submit">Insertar</button>
+            <button type="submit" id="insertar-empleado-btn">Insertar empleado</button>
         </form>
         </div>
 
         <button id="Regresar-btn">Regresar</button>
+        <div id="error-mensaje" style="display: none; color: red; font-weight: bold; margin-top: 10px;"></div>
+        <div id="success-mensaje" style="display: none; color: green; font-weight: bold; margin-top: 10px;"></div>
     </main>
 </body>
 </html>

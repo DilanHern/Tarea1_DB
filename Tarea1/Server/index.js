@@ -77,32 +77,47 @@ app.listen(port, () => { //escucha el puerto especificado para inicializar el se
     console.log(`Server running on port ${port}`)
 })
 
+app.use(express.json());
+app.post('/insertarEmpleado', (req, res) => {
+    const { nombre, salario } = req.body;
+    console.log("Datos recibidos:", nombre, salario);
+    ejecutarDboInsertarEmpleado(nombre, salario)
+    res.status(201).json({ message: "Empleado insertado exitosamente" });
+});
+
 //Funciones
-// Función para ejecutar el stored procedure dbo.InsertarEmpleado
-function ejecutarDboInsertarEmpleado(nombreInsertar, salarioInsertar) {
-    // Crear el request para ejecutar el stored procedure
-    const request = new Request('dbo.InsertarEmpleado', (err) => {
-        if (err) {
-            console.log('Error al ejecutar el stored procedure:', err);
+        // Función para ejecutar el stored procedure dbo.InsertarEmpleado
+        function ejecutarDboInsertarEmpleado(nombreInsertar, salarioInsertar) {
+            // Crear el request para ejecutar el stored procedure
+            const request = new Request('dbo.InsertarEmpleado', (err) => {
+                if (err) {
+                    console.log('Error al ejecutar el stored procedure:', err);
+                }
+            });
+
+            // Agregar parámetros al request
+            request.addParameter('Nombre', TYPES.VarChar, nombreInsertar);
+            request.addParameter('Salario', TYPES.Money, salarioInsertar);
+
+            // Ejecutar el stored procedure
+            connection.callProcedure(request);
+
+            // Manejar el resultado del stored procedure
+            request.on('requestCompleted', () => {
+                console.log('Stored procedure ejecutado exitosamente');
+                // Mostrar mensaje de éxito:
+                const successMessageDiv = document.getElementById('success-message');
+                successMessageDiv.textContent = "Empleado insertado exitosamente.";
+                successMessageDiv.style.display = "block";
+                setTimeout(() => {
+                    successMessageDiv.style.display = "none";
+                }, 3000);
+            });
+
+            request.on('error', (err) => {
+                console.log('Error en el request:', err);
+            });
         }
-    });
-
-    // Agregar parámetros al request
-    request.addParameter('Nombre', TYPES.VarChar, nombreInsertar);
-    request.addParameter('Salario', TYPES.Money, salarioInsertar);
-
-    // Ejecutar el stored procedure
-    connection.callProcedure(request);
-
-    // Manejar el resultado del stored procedure
-    request.on('requestCompleted', () => {
-        console.log('Stored procedure ejecutado exitosamente');
-    });
-
-    request.on('error', (err) => {
-        console.log('Error en el request:', err);
-    });
-}
 
 // Función para ejecutar el stored procedure dbo.ListarEmpleados
 function ejecutarDboListarEmpleado() {

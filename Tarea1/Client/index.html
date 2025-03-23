@@ -11,9 +11,10 @@
 
         //Si se presiona el boton insertar empleados:
         document.addEventListener('DOMContentLoaded', () => {
-            const insertarEmpleadosBtn = document.getElementById('insertar-empleados-btn');
+            const insertarEmpleadosBtn = document.getElementById('volver-insertar-empleados-btn');
             insertarEmpleadosBtn.addEventListener('click', () => {
                 window.location.href = '/ingresar'; //crea una solicitud GET a la ruta \ingresar para que Express la maneje
+                
             });
     });
 
@@ -23,7 +24,7 @@
     <main>
         <div class="form-container">
         <h1>Empleados de la Empresa</h1> 
-        <button id="insertar-empleados-btn">Insertar Empleados</button>
+        <button id="volver-insertar-empleados-btn">Volver a insertar empleados</button>
         </div>
     </main>
 </body>
