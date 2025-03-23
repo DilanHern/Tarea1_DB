@@ -85,16 +85,6 @@
             background-color: #3e8e41; /* Fondo más oscuro al hacer clic */
         }
     </style>
-
-    <script type="module">
-        // Código JavaScript para manejar el botón "Insertar Empleados"
-        document.addEventListener('DOMContentLoaded', () => {
-            const insertarEmpleadosBtn = document.getElementById('insertar-empleados-btn'); // Botón para insertar empleados
-            insertarEmpleadosBtn.addEventListener('click', () => {
-                window.location.href = '/ingresar'; // Redirige a la ruta "/ingresar" en Express
-            });
-        });
-    </script>
 </head>
 <body>
     <main>
@@ -108,7 +98,7 @@
                     <th>Nombre</th> <!-- Encabezado para el Nombre -->
                     <th>Salario</th> <!-- Encabezado para el Salario -->
                 </tr>
-                <!-- Aquí se insertarán los empleados dinámicamente -->
+                <!-- Aquí se insertarán los empleados -->
             </table>
 
             <!-- Botón para redirigir a la página de inserción de empleados -->
@@ -116,8 +106,17 @@
         </div>
     </main>
 
-    <!-- Script para cargar empleados dinámicamente -->
-    <script>
+    
+    <script type="module">
+        // Código JavaScript para manejar el botón "Insertar Empleados"
+        document.addEventListener('DOMContentLoaded', () => {
+            const insertarEmpleadosBtn = document.getElementById('insertar-empleados-btn'); // Botón para insertar empleados
+            insertarEmpleadosBtn.addEventListener('click', () => {
+                window.location.href = '/ingresar'; // Redirige a la ruta "/ingresar" en Express
+            });
+        });
+
+        // Código para cargar empleados
         document.addEventListener('DOMContentLoaded', () => {
             const tabla = document.getElementById('tabla-empleados'); // Selecciona la tabla donde se mostrarán los empleados
 
