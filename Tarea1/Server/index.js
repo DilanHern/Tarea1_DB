@@ -1,156 +1,87 @@
-import express from 'express'
-import { Connection, Request, TYPES } from 'tedious';
-import path from "path";
-//import path, { dirname } from 'path';
-import { createServer } from 'http';
+//*************LIBRERIAS A UTILIZAR*************
+import express from 'express'; // Framework para manejar rutas y solicitudes HTTP
+import { Connection, Request, TYPES } from 'tedious'; // Librería para conectarse a SQL Server
+import path from "path"; // Módulo para manejar rutas de archivos
+import { fileURLToPath } from 'url'; // Módulo para trabajar con URLs y rutas de archivos
 
-import { fileURLToPath } from 'url';
+// Obtener el directorio actual del archivo
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+//*************LIBRERIAS A UTILIZAR*************
 
-//CONEXION A EXPRESS
-const app = express() //creamos la aplicacion express quien maneja las rutas, el middleware y configuraciones necesarias para manejar solicitudes http
+//*************CONEXION A EXPRESS*************
+const app = express(); // Crear la aplicación Express
+const port = 3000; // Puerto en el que correrá el servidor
+app.set("port", port); // Configurar el puerto en la aplicación Express
 
-//const port = process.env.PORT || 4000; //creamos la aplicacion express quien maneja las rutas, el middleware y configuraciones necesarias para manejar solicitudes http
-const port = 3000;
-app.set("port", port);
-//app.listen(app.get("port")); ESTA INSTRUCCION ERA LA QUE ME DABA PROBLEMASAS
-console.log("Servidor corriendo en el puerto", app.get("port"));
-
-const server = createServer(app) //creamos "server" que representa un servidor http creado a partir de la app Express, maneja las conexiones y solicitudes de red (http).
-//Debemos pasarle "app" para integrar la logica de rutas y middleware con el servidor http
-
-//CONFIGURACION
+// Configuración para servir archivos estáticos desde la carpeta "publico"
 app.use(express.static(__dirname + "/publico"));
-
-//RUTAS
-app.get('/', (req, res) => {
-    // Servir el archivo index.html desde la carpeta client en la raíz del proyecto
-    res.sendFile(path.join(process.cwd(), 'Client', 'index.html'));
-});
-
+//*************CONEXION A EXPRESS*************
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
-//CONEXION A LA BASE DE DATOS
+//*************CONEXION A LA BASE DE DATOS*************
 const config = {
-    server: 'mssql-193905-0.cloudclusters.net',
+    server: 'mssql-193905-0.cloudclusters.net', // Dirección del servidor SQL
     authentication: {
-        type: 'default', //autentificacion SQL server
+        type: 'default', // Tipo de autenticación (SQL Server)
         options: {
-            userName: 'WebApp',
-            password: 'Santiydilan1'
+            userName: 'WebApp', // Usuario para conectarse a la base de datos
+            password: 'Santiydilan1' // Contraseña del usuario
         }
     },
     options: {
-        port: 13080,
-        database: 'DataBase_Tarea1',
-        trustServerCertificate: true
+        port: 13080, // Puerto del servidor SQL
+        database: 'DataBase_Tarea1', // Nombre de la base de datos
+        trustServerCertificate: true // Confianza en el certificado del servidor
     }
-}
+};
 
+// Crear la conexión a la base de datos
 const connection = new Connection(config);
 
-connection.connect(); //realizar la conexion
+// Intentar conectar a la base de datos
+connection.connect();
 
-//cuando ocurre el evento connect, verifica si se conecto o no a la base de datos y despliega su error
-connection.on('connect', (err)=>{
-    if (err){
+// Manejar el evento "connect" para verificar si la conexión fue exitosa o falló
+connection.on('connect', (err) => {
+    if (err) {
         console.log('No se pudo conectar a la base de datos');
         console.log(err);
+    } else {
+        console.log("Se ha conectado a la base de datos");
     }
-    else console.log("Se ha conectado a la base de datos");
-}); 
-//FIN DE LA CONEXION A LA BASE DE DATOS
+});
+//*************CONEXION A LA BASE DE DATOS*************
 /////////////////////////////////////////////////////////////////////////////////////////
 
-
-//MANEJO DE SOLICITUDES
+//*************MANEJO DE SOLICITUDES*************
 app.get('/', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'Client', 'index.html')); //Envia un archivo html al cliente como respuesta a la solicitud
+    // Servir el archivo index.html desde la carpeta Client
+    res.sendFile(path.join(process.cwd(), 'Client', 'index.html'));
 });
 
 app.get('/ingresar', (req, res) => {
+    // Servir el archivo ingresar.html desde la carpeta Client
     res.sendFile(path.join(process.cwd(), 'Client', 'ingresar.html'));
 });
-  
-app.listen(port, () => { //escucha el puerto especificado para inicializar el servidor
-    console.log(`Server running on port ${port}`)
-})
 
-//Funciones
-/* Función para ejecutar el stored procedure dbo.InsertarEmpleado
-function ejecutarDboInsertarEmpleado(nombreInsertar, salarioInsertar) {
-    // Crear el request para ejecutar el stored procedure
-    const request = new Request('dbo.InsertarEmpleado', (err) => {
-        if (err) {
-            console.log('Error al ejecutar el stored procedure:', err);
-        }
-    });
+// Iniciar el servidor en el puerto especificado
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
 
-    // Agregar parámetros al request
-    request.addParameter('Nombre', TYPES.VarChar, nombreInsertar);
-    request.addParameter('Salario', TYPES.Money, salarioInsertar);
-
-    // Ejecutar el stored procedure
-    connection.callProcedure(request);
-
-    // Manejar el resultado del stored procedure
-    request.on('requestCompleted', () => {
-        console.log('Stored procedure ejecutado exitosamente');
-    });
-
-    request.on('error', (err) => {
-        console.log('Error en el request:', err);
-    });
-}
-
-function ejecutarDboListarEmpleado() {
-    // Crear el request para ejecutar el stored procedure
-    const request = new Request('dbo.ListarEmpleados', (err) => {
-        if (err) {
-            console.log('Error al ejecutar el stored procedure:', err);
-        }
-    });
-
-    // Ejecutar el stored procedure
-    connection.callProcedure(request);
-
-    // Manejar el resultado del stored procedure
-    request.on('row', (columns) => {
-        let id, Nombre, Salario;
-        columns.forEach((column) => {
-            switch (column.metadata.colName) {
-                case 'id':
-                    id = column.value;
-                    break;
-                case 'Nombre':
-                    Nombre = column.value;
-                    break;
-                case 'Salario':
-                    Salario = column.value;
-                    break;
-            }
-        });
-        console.log(`Id: ${id}, Nombre: ${Nombre}, Salario: ${Salario}`);
-    });
-
-    request.on('requestCompleted', () => {
-        console.log('Stored procedure ejecutado exitosamente');
-    });
-
-    request.on('error', (err) => {
-        console.log('Error en el request:', err);
-    });
-}
-*/
-
+// Middleware para analizar solicitudes con cuerpo en formato JSON
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Para manejar datos enviados desde formularios
+// Middleware para analizar solicitudes con datos enviados desde formularios
+app.use(express.urlencoded({ extended: true }));
 
-//Rutas
+//*************RUTAS*************
+
+// Ruta POST para insertar un empleado en la base de datos
 app.post('/empleados', (req, res) => {
-    const { nombre, salario } = req.body;
+    const { nombre, salario } = req.body; // Obtener los datos enviados en la solicitud
 
+    // Crear un request para ejecutar el stored procedure "dbo.InsertarEmpleado"
     const request = new Request('dbo.InsertarEmpleado', (err) => {
         if (err) {
             console.error('Error al ejecutar el stored procedure:', err);
@@ -158,30 +89,35 @@ app.post('/empleados', (req, res) => {
         }
     });
 
+    // Agregar parámetros de entrada al stored procedure
     request.addParameter('nombreInsertar', TYPES.VarChar, nombre);
     request.addParameter('salarioInsertar', TYPES.Money, salario);
+
+    // Agregar un parámetro de salida para obtener el código de resultado
     request.addOutputParameter('OutResultCode', TYPES.Int);
 
-    request.on('requestCompleted', () => {
-        const resultCode = request.parameters.OutResultCode?.value;
-
-        if (resultCode === 0) { //ERRORRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+    // Manejar el valor del parámetro de salida
+    request.on('returnValue', (parameterName, value) => {
+        if (value === 0) {
             res.status(201).json({ message: 'Empleado insertado exitosamente' });
         } else {
-            res.status(400).json({ error: 'Error al insertar empleado', code: resultCode });
+            res.status(400).json({ error: 'Error al insertar empleado', code: value });
         }
     });
 
+    // Manejar errores durante la ejecución del request
     request.on('error', (err) => {
         console.error('Error en el request:', err);
         res.status(500).json({ error: 'Error en el servidor' });
     });
 
+    // Ejecutar el stored procedure
     connection.callProcedure(request);
 });
 
-
+// Ruta GET para listar todos los empleados
 app.get('/empleados', (req, res) => {
+    // Crear un request para ejecutar el stored procedure "dbo.ListarEmpleados"
     const request = new Request('dbo.ListarEmpleados', (err) => {
         if (err) {
             console.error('Error al ejecutar el stored procedure:', err);
@@ -190,8 +126,9 @@ app.get('/empleados', (req, res) => {
         }
     });
 
-    const empleados = [];
+    const empleados = []; // Arreglo para almacenar los empleados recuperados
 
+    // Manejar cada fila devuelta por el stored procedure
     request.on('row', (columns) => {
         const empleado = {};
         columns.forEach((column) => {
@@ -199,26 +136,28 @@ app.get('/empleados', (req, res) => {
                 case 'id':
                     empleado.id = column.value;
                     break;
-                case 'Nombre': 
+                case 'Nombre':
                     empleado.nombre = column.value;
                     break;
-                case 'Salario': 
+                case 'Salario':
                     empleado.salario = column.value;
                     break;
             }
         });
-        empleados.push(empleado);
+        empleados.push(empleado); // Agregar el empleado al arreglo
     });
 
+    // Cuando se completa el request, enviar los empleados como respuesta JSON
     request.on('requestCompleted', () => {
-        res.json(empleados); // manda resultados como json
+        res.json(empleados);
     });
 
+    // Manejar errores durante la ejecución del request
     request.on('error', (err) => {
         console.error('Error en el request:', err);
         res.status(500).json({ error: 'Error en el servidor' });
     });
 
+    // Ejecutar el stored procedure
     connection.callProcedure(request);
 });
-

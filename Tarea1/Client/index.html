@@ -1,26 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head> 
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mostrar Empleados</title>
-    <style>
-        body{
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        table, th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
+    <title>Mostrar Empleados</title> <!-- Título de la página -->
 
-        th, td {
-            padding: 1px;
+    <style>
+        /* Estilo general del cuerpo */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente moderna */
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9; /* Fondo claro */
+            color: #333; /* Texto oscuro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Altura mínima de la ventana */
         }
-    </style> 
+    
+        /* Contenedor principal */
+        .form-container {
+            background-color: #fff; /* Fondo blanco */
+            padding: 20px;
+            border-radius: 10px; /* Bordes redondeados */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            width: 80%;
+            max-width: 800px; /* Ancho máximo */
+            text-align: center;
+        }
+    
+        /* Título principal */
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #4CAF50; /* Verde atractivo */
+        }
+    
+        /* Tabla de empleados */
+        table {
+            width: 100%;
+            border-collapse: collapse; /* Colapsa los bordes */
+            margin-top: 20px;
+        }
+    
+        th, td {
+            border: 1px solid #ddd; /* Bordes suaves */
+            padding: 10px; /* Espaciado interno */
+            text-align: left; /* Alineación del texto */
+        }
+    
+        th {
+            background-color: #4CAF50; /* Fondo verde */
+            color: white; /* Texto blanco */
+            font-weight: bold;
+        }
+    
+        tr:nth-child(even) {
+            background-color: #f9f9f9; /* Fondo alternado */
+        }
+    
+        tr:hover {
+            background-color: #f1f1f1; /* Fondo al pasar el mouse */
+        }
+    
+        /* Botón para insertar empleados */
+        button {
+            background-color: #4CAF50; /* Fondo verde */
+            color: white; /* Texto blanco */
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px; /* Bordes redondeados */
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease; /* Transición suave */
+        }
+    
+        button:hover {
+            background-color: #45a049; /* Fondo más oscuro al pasar el mouse */
+        }
+    
+        button:active {
+            background-color: #3e8e41; /* Fondo más oscuro al hacer clic */
+        }
+    </style>
+
     <script type="module">
-        // Si se presiona el botón "Insertar Empleados"
+        // Código JavaScript para manejar el botón "Insertar Empleados"
         document.addEventListener('DOMContentLoaded', () => {
-            const insertarEmpleadosBtn = document.getElementById('insertar-empleados-btn');
+            const insertarEmpleadosBtn = document.getElementById('insertar-empleados-btn'); // Botón para insertar empleados
             insertarEmpleadosBtn.addEventListener('click', () => {
                 window.location.href = '/ingresar'; // Redirige a la ruta "/ingresar" en Express
             });
@@ -30,29 +99,33 @@
 <body>
     <main>
         <div class="form-container">
-            <h1>Empleados de la Empresa</h1> 
+            <h1>Empleados de la Empresa</h1> <!-- Título de la página -->
+
+            <!-- Tabla para mostrar los empleados -->
             <table id="tabla-empleados" style="width: 100%;">
                 <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Salario</th>
+                    <th>ID</th> <!-- Encabezado para el ID -->
+                    <th>Nombre</th> <!-- Encabezado para el Nombre -->
+                    <th>Salario</th> <!-- Encabezado para el Salario -->
                 </tr>
                 <!-- Aquí se insertarán los empleados dinámicamente -->
             </table>
+
+            <!-- Botón para redirigir a la página de inserción de empleados -->
             <button id="insertar-empleados-btn">Insertar Empleados</button>
         </div>
     </main>
 
-    <!-- Agregar el script al final del body para cargar empleados -->
+    <!-- Script para cargar empleados dinámicamente -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const tabla = document.getElementById('tabla-empleados');
+            const tabla = document.getElementById('tabla-empleados'); // Selecciona la tabla donde se mostrarán los empleados
 
             // Función para obtener empleados de la API
             async function cargarEmpleados() {
                 try {
-                    const response = await fetch('http://localhost:3000/empleados');
-                    const empleados = await response.json();
+                    const response = await fetch('http://localhost:3000/empleados'); // Realiza una solicitud GET a la API
+                    const empleados = await response.json(); // Convierte la respuesta en JSON
 
                     // Limpiar filas previas (excepto el encabezado)
                     tabla.innerHTML = `
@@ -65,20 +138,20 @@
 
                     // Llenar la tabla con los datos recibidos
                     empleados.forEach(emp => {
-                        const fila = document.createElement('tr');
+                        const fila = document.createElement('tr'); // Crea una nueva fila
                         fila.innerHTML = `
-                            <td>${emp.id}</td>
-                            <td>${emp.nombre}</td>
-                            <td>${emp.salario}</td>
+                            <td>${emp.id}</td> <!-- Muestra el ID del empleado -->
+                            <td>${emp.nombre}</td> <!-- Muestra el Nombre del empleado -->
+                            <td>${emp.salario}</td> <!-- Muestra el Salario del empleado -->
                         `;
-                        tabla.appendChild(fila);
+                        tabla.appendChild(fila); // Agrega la fila a la tabla
                     });
                 } catch (error) {
-                    console.error('Error cargando empleados:', error);
+                    console.error('Error cargando empleados:', error); // Muestra un error en la consola si ocurre
                 }
             }
 
-            cargarEmpleados(); // Llamar la función cuando cargue la página
+            cargarEmpleados(); // Llama a la función para cargar empleados al cargar la página
         });
     </script>
 </body>

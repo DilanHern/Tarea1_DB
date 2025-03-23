@@ -1,106 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ingresar Empleados</title>
-    <style> /*codigo css*/
-        body{
+    <title>Ingresar Empleados</title> <!-- Título de la página -->
+    <style>
+        /* Estilo general del cuerpo */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente moderna */
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
+            padding: 0;
+            background-color: #f4f4f9; /* Fondo claro */
+            color: #333; /* Texto oscuro */
+            display: block;
             justify-content: center;
             align-items: center;
-            height: 90svh;
-            font-size: large;
+            margin-left: 450px;
+            margin-top: 100px;
         }
-
-        .form-container{
-            width: 500px;
+    
+        /* Contenedor principal del formulario */
+        .form-container {
+            background-color: #fff; /* Fondo blanco */
+            padding: 30px;
+            border-radius: 10px; /* Bordes redondeados */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            width: 100%;
+            max-width: 500px; /* Ancho máximo */
+            text-align: center;
         }
-        
-        form{
+    
+        /* Título principal */
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #4CAF50; /* Verde atractivo */
+        }
+    
+        /* Texto descriptivo */
+        p {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: #555; /* Texto gris */
+        }
+    
+        /* Estilo del formulario */
+        form {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            flex-direction: column; /* Alinea los elementos en columna */
+            gap: 15px; /* Espaciado entre los elementos */
         }
-        .error{
-            color: red;
+    
+        label {
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: left;
+            color: #333; /* Texto oscuro */
         }
-
-        .escondido{
-            display: none;
+    
+        input {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc; /* Borde gris claro */
+            border-radius: 5px; /* Bordes redondeados */
+            width: 100%;
+            box-sizing: border-box; /* Incluye el padding en el ancho */
         }
-
+    
+        input:focus {
+            outline: none;
+            border-color: #4CAF50; /* Borde verde al enfocar */
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Sombra verde */
+        }
+    
+        /* Botón de insertar */
+        button {
+            background-color: #4CAF50; /* Fondo verde */
+            color: white; /* Texto blanco */
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px; /* Bordes redondeados */
+            cursor: pointer;
+            transition: background-color 0.3s ease; /* Transición suave */
+        }
+    
+        button:hover {
+            background-color: #45a049; /* Fondo más oscuro al pasar el mouse */
+        }
+    
+        button:active {
+            background-color: #3e8e41; /* Fondo más oscuro al hacer clic */
+        }
+    
+        /* Mensajes de error */
+        .error {
+            color: red; /* Texto rojo */
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    
+        /* Mensajes de éxito */
+        #success-mensaje {
+            color: green; /* Texto verde */
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    
+        /* Botón de regresar */
+        #Regresar-btn {
+            background-color: #f44336; /* Fondo rojo */
+            color: white; /* Texto blanco */
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px; /* Bordes redondeados */
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease; /* Transición suave */
+        }
+    
+        #Regresar-btn:hover {
+            background-color: #e53935; /* Fondo más oscuro al pasar el mouse */
+        }
+    
+        #Regresar-btn:active {
+            background-color: #d32f2f; /* Fondo más oscuro al hacer clic */
+        }
     </style>
 
-    <script type="module"> //codigo javascript
-        //Si se presiona el boton insertar empleados:
+    <script type="module">
+        // Código JavaScript
+
+        // Evento para manejar el botón "Regresar"
         document.addEventListener('DOMContentLoaded', () => {
             const RegresarBtn = document.getElementById('Regresar-btn');
             RegresarBtn.addEventListener('click', () => {
-                window.location.href = '/'; //crea una solicitud GET a la ruta \ para que Express la maneje
+                window.location.href = '/'; // Redirige a la página principal
             });
         });
+
+        // Evento para manejar el formulario de inserción
         document.addEventListener('DOMContentLoaded', () => {
-    const formulario = document.getElementById('formulario-ingresar');
-    const errorMensaje = document.querySelector('.error');
+            const formulario = document.getElementById('formulario-ingresar'); // Obtiene el formulario
+            const errorMensaje = document.querySelector('.error'); // Selecciona el elemento para mostrar errores
 
-    formulario.addEventListener('submit', async (event) => {
-        event.preventDefault(); // Evita que el formulario recargue la página
+            formulario.addEventListener('submit', async (event) => {
+                event.preventDefault(); // Evita que el formulario recargue la página
 
-        // Oculta el mensaje de error al intentar enviar
-        errorMensaje.classList.add('escondido');
+                // Oculta el mensaje de error al intentar enviar
+                errorMensaje.classList.add('escondido');
 
-        // Obtener los datos del formulario
-        const nombre = document.getElementById('nombre').value;
-        const salario = document.getElementById('salario').value;
+                // Obtener los datos del formulario
+                const nombre = document.getElementById('nombre').value; // Obtiene el valor del campo "nombre"
+                const salario = document.getElementById('salario').value; // Obtiene el valor del campo "salario"
+                const errorMensajeDiv = document.getElementById('error-mensaje'); // Div para mostrar errores
+                const successMensajeDiv = document.getElementById('success-mensaje'); // Div para mostrar éxito
 
-        try {
-            // Enviar los datos al servidor
-            const response = await fetch('http://localhost:3000/empleados', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ nombre, salario }),
+                // Validaciones
+                if (nombre === "") {
+                    // Si el campo "nombre" está vacío, muestra un mensaje de error
+                    errorMensajeDiv.textContent = "Error: El campo 'Nombre' es obligatorio.";
+                    errorMensajeDiv.style.display = "block"; // Muestra el mensaje
+                    setTimeout(() => {
+                        errorMensajeDiv.style.display = "none"; // Oculta el mensaje después de 3 segundos
+                    }, 3000);
+                } else if (!/^[a-zA-Z\s-]+$/.test(nombre)) {
+                    // Verifica si el nombre contiene solo letras, espacios y guiones
+                    errorMensajeDiv.textContent = "Error: El campo 'nombre' solo puede contener caracteres alfabéticos, guiones y espacios.";
+                    errorMensajeDiv.style.display = "block";
+                    setTimeout(() => {
+                        errorMensajeDiv.style.display = "none";
+                    }, 3000);
+                } else if (salario === "") {
+                    // Si el campo "salario" está vacío, muestra un mensaje de error
+                    errorMensajeDiv.textContent = "Error: El campo 'Salario' es obligatorio.";
+                    errorMensajeDiv.style.display = "block";
+                    setTimeout(() => {
+                        errorMensajeDiv.style.display = "none";
+                    }, 3000);
+                } else if (!/^[0-9]+(\.[0-9]{2})?$/.test(salario)) {
+                    // Verifica si el salario contiene solo dígitos y hasta 2 decimales
+                    errorMensajeDiv.textContent = "Error: El campo 'Salario' solo permite dígitos y decimales de 2 dígitos.";
+                    errorMensajeDiv.style.display = "block";
+                    setTimeout(() => {
+                        errorMensajeDiv.style.display = "none";
+                    }, 3000);
+                } else {
+                    // Si pasa todas las validaciones, intenta enviar los datos al servidor
+                    try {
+                        const response = await fetch('http://localhost:3000/empleados', {
+                            method: 'POST', // Método HTTP POST
+                            headers: {
+                                'Content-Type': 'application/json', // Indica que se envía JSON
+                            },
+                            body: JSON.stringify({ nombre, salario }), // Convierte los datos a JSON
+                        });
+
+                        if (response.ok) {
+                            // Si la respuesta es exitosa
+                            errorMensaje.classList.add('escondido'); // Oculta el mensaje de error
+                            alert('Empleado insertado exitosamente'); // Muestra un mensaje de éxito
+                            formulario.reset(); // Limpia el formulario
+                        } else {
+                            // Si la respuesta no es exitosa, lanza un error
+                            const errorData = await response.json();
+                            throw new Error(errorData.error || 'Error al insertar empleado');
+                        }
+                    } catch (error) {
+                        console.error(error); // Muestra el error en la consola
+                        errorMensaje.textContent = error.message; // Muestra el mensaje de error
+                        errorMensaje.classList.remove('escondido'); // Hace visible el mensaje de error
+                    }
+                }
             });
-
-            if (response.ok) {
-                // Si la respuesta es exitosa, oculta el mensaje de error y muestra un mensaje de éxito
-                errorMensaje.classList.add('escondido'); // Asegúrate de que el mensaje de error esté oculto
-                alert('Empleado insertado exitosamente');
-                formulario.reset(); // Limpia el formulario
-            } else {
-                // Si la respuesta no es exitosa, lanza un error
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Error al insertar empleado');
-            }
-        } catch (error) {
-            console.error(error);
-            // Muestra el mensaje de error solo si ocurre un problema real
-            errorMensaje.textContent = error.message;
-            errorMensaje.classList.remove('escondido');
-        }
-    });
-});
+        });
     </script>
 </head>
 <body>
-    <main> 
+    <main>
         <div class="form-container">
-        <h1>Ingresar Empleados</h1>
-        <p>Ingrese los datos del trabajador:</p>
-        <form id="formulario-ingresar"> 
-            <label for="nombre">Nombre:</label>
-            <input type="text" name="nombre" id="nombre" placeholder="Nombre del empleado">
-            <label for="salario">Salario:</label>
-            <input type="text" name="salario" id="salario" placeholder="Salario del empleado">
-            <button type="submit">Insertar</button>
-        </form>
+            <h1>Ingresar Empleados</h1>
+            <p>Ingrese los datos del trabajador:</p>
+            <form id="formulario-ingresar">
+                <label for="nombre">Nombre:</label>
+                <input type="text" name="nombre" id="nombre" placeholder="Nombre del empleado">
+                <label for="salario">Salario:</label>
+                <input type="text" name="salario" id="salario" placeholder="Salario del empleado">
+                <button type="submit">Insertar</button>
+            </form>
         </div>
-        <button id="Regresar-btn">Regresar</button>
-        <p class="error escondido">Error al insertar empleado.</p>
+        <button id="Regresar-btn">Regresar</button> <!-- Botón para regresar a la página principal -->
+        <div class="error escondido" style="display: none">Error al insertar empleado.</div> <!-- Mensaje de error -->
+        <div id="error-mensaje" style="display: none; color: red; font-weight: bold; margin-top: 10px;"></div> <!-- Div para errores -->
     </main>
 </body>
 </html>
