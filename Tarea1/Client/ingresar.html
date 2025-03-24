@@ -165,28 +165,36 @@
                     setTimeout(() => {
                         errorMensajeDiv.style.display = "none"; // Oculta el mensaje después de 3 segundos
                     }, 3000);
-                } else if (!/^[a-zA-Z\s-]+$/.test(nombre)) {
+                } 
+                
+                else if (!/^[a-zA-Z\s-]+$/.test(nombre)) {
                     // Verifica si el nombre contiene solo letras, espacios y guiones
                     errorMensajeDiv.textContent = "Error: El campo 'nombre' solo puede contener caracteres alfabéticos, guiones y espacios.";
                     errorMensajeDiv.style.display = "block";
                     setTimeout(() => {
                         errorMensajeDiv.style.display = "none";
                     }, 3000);
-                } else if (salario === "") {
+                } 
+                
+                else if (salario === "") {
                     // Si el campo "salario" está vacío, muestra un mensaje de error
                     errorMensajeDiv.textContent = "Error: El campo 'Salario' es obligatorio.";
                     errorMensajeDiv.style.display = "block";
                     setTimeout(() => {
                         errorMensajeDiv.style.display = "none";
                     }, 3000);
-                } else if (!/^[0-9]+(\.[0-9]{2})?$/.test(salario)) {
+                } 
+                
+                else if (!/^[0-9]+(\.[0-9]{2})?$/.test(salario)) {
                     // Verifica si el salario contiene solo dígitos y hasta 2 decimales
                     errorMensajeDiv.textContent = "Error: El campo 'Salario' solo permite dígitos y decimales de 2 dígitos.";
                     errorMensajeDiv.style.display = "block";
                     setTimeout(() => {
                         errorMensajeDiv.style.display = "none";
                     }, 3000);
-                } else {
+                } 
+                
+                else {
                     // Si pasa todas las validaciones, intenta enviar los datos al servidor
                     try {
                         const response = await fetch('http://localhost:3000/empleados', {
@@ -204,8 +212,17 @@
                             formulario.reset(); // Limpia el formulario
                         } else {
                             // Si la respuesta no es exitosa, lanza un error
-                            const errorData = await response.json();
-                            throw new Error(errorData.error || 'Error al insertar empleado');
+                            if (response.status === 409){ //quiere decir que ya hay un empleado con ese nombre
+                                errorMensajeDiv.textContent = "Error: ya existe un empleado con ese nombre.";
+                                errorMensajeDiv.style.display = "block";
+                                setTimeout(() => {
+                                    errorMensajeDiv.style.display = "none";
+                                }, 3000);
+                            }
+                            else {
+                                const errorData = await response.json();
+                                throw new Error(errorData.error || 'Error al insertar empleado.');
+                            }
                         }
                     } catch (error) {
                         console.error(error); // Muestra el error en la consola

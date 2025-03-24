@@ -90,18 +90,24 @@ app.post('/empleados', (req, res) => {
     });
 
     // Agregar parámetros de entrada al stored procedure
-    request.addParameter('nombreInsertar', TYPES.VarChar, nombre);
-    request.addParameter('salarioInsertar', TYPES.Money, salario);
+    request.addParameter('inNombreInsertar', TYPES.VarChar, nombre);
+    request.addParameter('inSalarioInsertar', TYPES.Money, salario);
 
     // Agregar un parámetro de salida para obtener el código de resultado
-    request.addOutputParameter('OutResultCode', TYPES.Int);
+    request.addOutputParameter('outResultCode', TYPES.Int);
 
     // Manejar el valor del parámetro de salida
     request.on('returnValue', (parameterName, value) => {
         if (value === 0) {
             res.status(201).json({ message: 'Empleado insertado exitosamente' });
-        } else {
+        } 
+        else if (value === 50001){ //ya existe ese nombre de empleado
+            res.status(409).json({ error: 'Error: ya existe un empleado con ese nombre', code: value });
+            return;
+        }
+        else {
             res.status(400).json({ error: 'Error al insertar empleado', code: value });
+            return;
         }
     });
 
@@ -125,6 +131,9 @@ app.get('/empleados', (req, res) => {
             return;
         }
     });
+
+    // Agregar el parámetro de salida esperado por el stored procedure
+    request.addOutputParameter('outResultCode', TYPES.Int);
 
     const empleados = []; // Arreglo para almacenar los empleados recuperados
 
